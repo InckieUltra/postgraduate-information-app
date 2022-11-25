@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">InformationApplication</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Left</string>
+    <string name="title_dashboard">Middle</string>
+    <string name="title_notifications">Right</string>
 </resources>
