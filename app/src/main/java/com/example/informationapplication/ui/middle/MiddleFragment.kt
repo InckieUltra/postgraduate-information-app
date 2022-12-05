@@ -1,7 +1,8 @@
 package com.example.informationapplication.ui.middle
 
+import android.content.ContentValues
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.informationapplication.databinding.FragmentMiddleBinding
 import java.util.*
-import kotlin.math.log
 
 class MiddleFragment : Fragment() {
     private var _binding: FragmentMiddleBinding? = null
@@ -31,17 +31,18 @@ class MiddleFragment : Fragment() {
 
         _binding = FragmentMiddleBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        val db = ScheduleDataHelper(this.context, 1)
 
         val textView: TextView = binding.currentDateText
         // choosing a certain date on calendarView
         val today: Date = DatesUtil.getDayBegin()
+        val cal: Calendar = Calendar.getInstance()
         val calendarView: CalendarView = binding.calendarView
         calendarView.setOnDateChangeListener {
                 calendarView, year, month, day ->
-                    val toast: Toast = Toast.makeText(calendarView.context, "您选择了" + year + "年" + month + "月" + day + "日。", Toast.LENGTH_SHORT)
+                    val toast: Toast = Toast.makeText(calendarView.context, "您选择了" + year + "年" + (month+1) + "月" + day + "日。", Toast.LENGTH_SHORT)
                     toast.show()
 
-                    val cal: Calendar = Calendar.getInstance()
                     cal.set(year, month, day)
                     val currentChosenDate: Date = cal.time
                     val diff = DatesUtil.getDiffDays(currentChosenDate, today)
@@ -55,6 +56,22 @@ class MiddleFragment : Fragment() {
                         diff == -2 -> "前天"
                         else -> ""
                     })
+                    db.writableDatabase
+        }
+
+        val addScheduleButton = binding.addScheduleButton
+        addScheduleButton.setOnClickListener{
+            val schedule = Schedule()
+            schedule.date = cal.time
+
+            val intent: Intent = Intent(this.context, ScheduleActivity::class.java)
+            intent.putExtra("year", cal.time.year + 1900)
+            intent.putExtra("month", cal.time.month + 1)
+            intent.putExtra("date", cal.time.date)
+            intent.putExtra("day", cal.time.day)
+            intent.putExtra("isNew", true)
+
+            startActivity(intent)
         }
 
         return root
@@ -63,5 +80,16 @@ class MiddleFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun addSchedule(schedule: Schedule, db: ScheduleDataHelper) {
+
+        val value = ContentValues()
+        value.put("title", schedule.title)
+        value.put("content", schedule.content)
+        value.put("date", (schedule.date.year+1900).toString() + "-" + (schedule.date.month+1).toString() + "-" + schedule.date.date.toString())
+        value.put("tag", schedule.tag)
+
+        db.writableDatabase.insert("schedule", null, value)
     }
 }
