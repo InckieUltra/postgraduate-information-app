@@ -7,9 +7,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.example.informationapplication.R
 import com.example.informationapplication.databinding.FragmentRightBinding
+import com.example.informationapplication.ui.right.DBOpenHelper.closeAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,11 +27,14 @@ import master.flame.danmaku.danmaku.model.android.SpannedCacheStuffer
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser
 import java.io.File
 import java.lang.Thread.sleep
-import java.sql.*
+import java.sql.Connection
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.sql.SQLException
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
+import java.util.*
 import kotlin.concurrent.thread
+
 
 class RightFragment : Fragment() {
 
@@ -41,6 +48,7 @@ class RightFragment : Fragment() {
     var uid:Long = -1
     var exit:Boolean=false
     val format:SimpleDateFormat= SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    var mydancolor: Int = Color.BLUE;
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,6 +60,10 @@ class RightFragment : Fragment() {
 
         _binding = FragmentRightBinding.inflate(inflater, container, false)
         var lastFetch: String = "2022-01-01 00:00:00"
+
+        val prefs = requireActivity().getSharedPreferences("danconfig",0)
+        mydancolor = prefs.getInt("color",Color.BLUE)
+
         val f = File(
             "/data/data/com.example.informationapplication/shared_prefs/userinfo.xml"
         )
@@ -62,15 +74,15 @@ class RightFragment : Fragment() {
         } else {
             Log.d("TAG", "Setup default preferences")
             thread {
+                var conn1: Connection? = null //打开数据库对xiang
+                conn1 = DBOpenHelper.conn
+                var ps1: PreparedStatement? = null //操作整合sql语句的对象
+                var rs1: ResultSet? = null //查询结果的集合//结果存放集合
                 try {
-                    var conn1: Connection? = null //打开数据库对xiang
-                    conn1 = DBOpenHelper.conn
                     Log.d("111", "thread1 begin")
                     //MySQL 语句
                     val sql1 = "insert into user(uid) VALUES(null)"
                     val sql2 = "select last_insert_id() as uid"
-                    var ps1: PreparedStatement? = null //操作整合sql语句的对象
-                    var rs1: ResultSet? = null //查询结果的集合//结果存放集合
                     if (conn1 != null && !conn1.isClosed()) {
                         Log.d("111", "conn success")
                         ps1 = conn1.prepareStatement(sql1) as PreparedStatement
@@ -93,18 +105,22 @@ class RightFragment : Fragment() {
                         }
                     }
                 } catch (e: SQLException) {
+                    closeAll(conn1,ps1,rs1)
                     e.printStackTrace()
                 }
+                closeAll(conn1,ps1,rs1)
             }
         }
         thread {
+            var conn: Connection? = null //打开数据库对xiang
+            conn = DBOpenHelper.conn
+            var ps: PreparedStatement? = null //操作整合sql语句的对象
+            var rs: ResultSet? = null //查询结果的集合//结果存放集合
             while(true) {
                 list.clear()
                 if(exit)break
                 try {
                     Log.d("t1",uid.toString()+" "+lastFetch)
-                    var conn: Connection? = null //打开数据库对xiang
-                    conn = DBOpenHelper.conn
 
                     var Cal:Calendar = java.util.Calendar.getInstance();
 
@@ -114,8 +130,6 @@ class RightFragment : Fragment() {
 
                     //MySQL 语句
                     val sql = "select * from danmu where time>\'"+lastFetch+"\' and time > \'"+format.format(Cal.getTime())+"\' order by time limit 5"
-                    var ps: PreparedStatement? = null //操作整合sql语句的对象
-                    var rs: ResultSet? = null //查询结果的集合//结果存放集合
                     if (conn != null && ! conn.isClosed()) {
                         //Log.d("t1", "conn success")
                         ps = conn.prepareStatement(sql) as PreparedStatement
@@ -128,7 +142,8 @@ class RightFragment : Fragment() {
                                     val d = Danmu()
                                     d.content = rs.getString("content")
                                     d.uid = rs.getLong("uid")
-                                    //if(d.uid!=uid)
+                                    d.color = rs.getInt("color")
+                                    if(d.uid!=uid)
                                         list.add(d)
                                     lastFetch = rs.getString("time")
                                 }
@@ -136,6 +151,7 @@ class RightFragment : Fragment() {
                         }
                     }
                 } catch (e: SQLException) {
+                    closeAll(conn,ps,rs)
                     e.printStackTrace()
                 }
                 GlobalScope.launch(Dispatchers.Main) {
@@ -143,11 +159,12 @@ class RightFragment : Fragment() {
                     Log.d("TAG", "GlobalScope开启协程：" + Thread.currentThread().name)
                     //可以做UI操作
                     for(item in list) {
-                        addDanmaku(false, item.content)
+                        addDanmaku(false, item.content,false, item.color)
                     }
                 }
                 sleep(1200)
             }
+            closeAll(conn,ps,rs)
         }
         // 滚动弹幕最大显示4行
         var maxLinesPair: HashMap<Int, Int> = HashMap<Int, Int>()
@@ -198,21 +215,27 @@ class RightFragment : Fragment() {
             }
         });//本来是this！！！！！！！
         danmakuView.prepare(baseDanmakuParser, danmakuContext);
-        danmakuView.showFPS(true); //是否显示FPS
+        danmakuView.showFPS(false); //是否显示FPS
         danmakuView.enableDanmakuDrawingCache(true);
         binding.dansubmit.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 val inputcontent:String = binding.daninput.text.toString()
-                addDanmaku(true,inputcontent)
+                hideKeyboard(binding.root)
+                binding.daninput.setText("")
+                if(inputcontent=="")
+                    return
+                addDanmaku(true,inputcontent,true, mydancolor)
                 thread {
+                    var conn2: Connection? = null //打开数据库对xiang
+                    conn2 = DBOpenHelper.conn
+                    var ps2: PreparedStatement? = null //操作整合sql语句的对象
+                    var rs2: ResultSet? = null //查询结果的集合//结果存放集合
                     try {
-                        var conn2: Connection? = null //打开数据库对xiang
-                        conn2 = DBOpenHelper.conn
                         Log.d("t2", "thread2 begin")
                         val currenttime=format.format(Date())
                         Log.d("t2",currenttime)
                         //MySQL 语句
-                        val sql = "insert into danmu(time,uid,content) VALUES(\""+currenttime+"\","+uid.toString()+",\""+inputcontent+"\")"
+                        val sql = "insert into danmu(time,uid,content,color) VALUES(\""+currenttime+"\","+uid.toString()+",\""+inputcontent+"\","+mydancolor+")"
                         Log.d("t2",sql)
                         var ps2: PreparedStatement? = null //操作整合sql语句的对象
                         var rs2: ResultSet? = null //查询结果的集合//结果存放集合
@@ -224,13 +247,54 @@ class RightFragment : Fragment() {
                             }
                         }
                     } catch (e: SQLException) {
+                        closeAll(conn2,ps2,rs2)
                         e.printStackTrace()
                     }
+                    closeAll(conn2,ps2,rs2)
+                }
+            }
+        })
+        binding.reddan.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?){
+                mydancolor = Color.RED;
+                val prefs =
+                    requireActivity().getSharedPreferences("danconfig", Context.MODE_PRIVATE)
+                val editor = prefs?.edit()
+                editor?.putInt("color", Color.RED)
+                editor?.commit()
+                if (binding.changedancolor != null && binding.changedancolor.isExpanded()) {
+                    binding.changedancolor.collapse();
+                }
+            }
+        })
+        binding.bluedan.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?){
+                mydancolor = Color.BLUE;
+                val prefs =
+                    requireActivity().getSharedPreferences("danconfig", Context.MODE_PRIVATE)
+                val editor = prefs?.edit()
+                editor?.putInt("color", Color.BLUE)
+                editor?.commit()
+                if (binding.changedancolor != null && binding.changedancolor.isExpanded()) {
+                    binding.changedancolor.collapse();
+                }
+            }
+        })
+        binding.greendan.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?){
+                mydancolor = Color.GREEN;
+                val prefs =
+                    requireActivity().getSharedPreferences("danconfig", Context.MODE_PRIVATE)
+                val editor = prefs?.edit()
+                editor?.putInt("color", Color.GREEN)
+                editor?.commit()
+                if (binding.changedancolor != null && binding.changedancolor.isExpanded()) {
+                    binding.changedancolor.collapse();
                 }
             }
         })
         val root: View = binding.root
-
+        Glide.with(this).load(R.drawable.bg3).into(binding.danimage)
         /*val textView: TextView = binding.textNotifications
         rightViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
@@ -246,7 +310,7 @@ class RightFragment : Fragment() {
 
 
 
-    fun addDanmaku(isLive: Boolean,  sendContent: String) {
+    fun addDanmaku(isLive: Boolean,  sendContent: String, isMine: Boolean, dancolor: Int) {
         var danmakuView=binding.danmaku
         if (danmakuView == null || danmakuContext == null) {
             return;
@@ -269,14 +333,26 @@ class RightFragment : Fragment() {
         //设置文字大小
         danmaku.textSize = 50.toFloat();
         //设置文字颜色
-        danmaku.textColor = Color.BLACK;
+        danmaku.textColor = dancolor;
         //设置阴影的颜色
         danmaku.textShadowColor = Color.WHITE;
-        //设置线颜色
-        danmaku.underlineColor = Color.GREEN;
-        //设置背景颜色
-        danmaku.borderColor = Color.GREEN;
+        if(isMine) {
+            //设置线颜色
+            danmaku.underlineColor = Color.GREEN
+            //设置背景颜色
+            danmaku.borderColor = Color.GREEN;
+        }
+        else {
+            danmaku.underlineColor = Color.TRANSPARENT
+            danmaku.borderColor = Color.TRANSPARENT
+        }
         //添加这条弹幕，也就相当于发送
         danmakuView.addDanmaku(danmaku);
     }
+}
+
+fun hideKeyboard(view: View) {
+    val imm = view.context
+        .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm?.hideSoftInputFromWindow(view.windowToken, 0)
 }

@@ -10,12 +10,54 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <master.flame.danmaku.ui.widget.DanmakuView
-            android:id="@+id/danmaku"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="100dp"/>
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/danimage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <master.flame.danmaku.ui.widget.DanmakuView
+                android:id="@+id/danmaku"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <com.getbase.floatingactionbutton.FloatingActionsMenu
+                android:id="@+id/changedancolor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="bottom"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="40dp"
+                app:fab_addButtonSize="mini">
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/reddan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_size="mini"
+                    app:fab_colorNormal="#FF0000"/>
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/bluedan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_size="mini"
+                    app:fab_colorNormal="#0000FF"/>
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/greendan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_size="mini"
+                    app:fab_colorNormal="#00FF00"/>
+
+            </com.getbase.floatingactionbutton.FloatingActionsMenu>
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/layout"
@@ -28,7 +70,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="20dp"
                 android:autofillHints="请输入弹幕"
-                android:hint="@android:string/autofill"
+                android:hint="发送一条友善的弹幕吧"
                 android:inputType="text"
                 android:layout_weight="4"/>
             <Button
