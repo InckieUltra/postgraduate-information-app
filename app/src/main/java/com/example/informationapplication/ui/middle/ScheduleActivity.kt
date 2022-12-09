@@ -58,6 +58,8 @@ class ScheduleActivity : AppCompatActivity() {
         // click cancel button
         cancelButton.setOnClickListener {
             val intent: Intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
         }
 
@@ -82,6 +84,8 @@ class ScheduleActivity : AppCompatActivity() {
             // done
             scheduleDataHelper.addOrUpdateSchedule(this.createNewSchedule())
             val intent: Intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
         }
     }
