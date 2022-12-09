@@ -3,12 +3,12 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/mobile_navigation"
-            app:startDestination="@+id/left_frag">
+            app:startDestination="@+id/information_frag">
 
     <fragment
-            android:id="@+id/left_frag"
-            android:name="com.example.informationapplication.ui.home.LeftFragment"
-            android:label="left"
+            android:id="@+id/information_frag"
+            android:name="com.example.informationapplication.ui.home.InformationFragment"
+            android:label="研究生资讯"
             tools:layout="@layout/fragment_left"/>
 
     <fragment
