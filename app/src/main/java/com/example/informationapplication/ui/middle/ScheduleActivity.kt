@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.informationapplication.MainActivity
@@ -17,12 +18,13 @@ class ScheduleActivity : AppCompatActivity() {
     private val binding get() = _binding!!
 
     private var initSchedule: Schedule? = null
-    private val scheduleDataHelper: ScheduleDataHelper = ScheduleDataHelper(this, 1)
+    private val db: ScheduleDataHelper = ScheduleDataHelper(this, 1)
     private lateinit var dateTextView: TextView
     private lateinit var cancelButton: Button
     private lateinit var editButton: Button
     private lateinit var titleText: EditText
     private lateinit var contentText: EditText
+    private lateinit var tagSelector: RadioGroup
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +35,7 @@ class ScheduleActivity : AppCompatActivity() {
         editButton = binding.edit
         titleText = binding.titleText
         contentText = binding.contentText
+        tagSelector = binding.tag
         val root: View = binding.root
         setContentView(root)
 
@@ -82,7 +85,7 @@ class ScheduleActivity : AppCompatActivity() {
 
         editButton.setOnClickListener {
             // done
-            scheduleDataHelper.addOrUpdateSchedule(this.createNewSchedule())
+            db.addOrUpdateSchedule(this.createNewSchedule())
             val intent: Intent = Intent(this, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -121,7 +124,7 @@ class ScheduleActivity : AppCompatActivity() {
         if (initSchedule != null) {
             schedule.id = initSchedule!!.id
         }
-        //TODO choose tag
+        schedule.tag = tagSelector.checkedRadioButtonId.toString()
         return schedule
     }
 }

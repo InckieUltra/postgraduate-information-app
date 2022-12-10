@@ -1,8 +1,11 @@
 package com.example.informationapplication.ui.middle
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import java.lang.RuntimeException
 
 class ScheduleDataHelper(private val context: Context?, version: Int): SQLiteOpenHelper(context, "schedule.db", null, version) {
     private val createDB: String = "CREATE TABLE schedule " +
@@ -16,11 +19,42 @@ class ScheduleDataHelper(private val context: Context?, version: Int): SQLiteOpe
         db.execSQL(createDB)
     }
 
-    override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
-        TODO("Not yet implemented")
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        db!!.execSQL("DROP TABLE IF EXISTS schedule")
+        onCreate(db)
     }
 
     fun addOrUpdateSchedule(schedule: Schedule) {
-        // TODO insert schedule
+        if (schedule.id == null) {
+            addSchedule(schedule)
+        }
+        else {
+            upgradeSchedule(schedule)
+        }
+    }
+
+    private fun addSchedule(schedule: Schedule) = try {
+        val db = this.writableDatabase
+        var value = ContentValues().apply {
+            put("title", schedule.title)
+            put("content", schedule.content)
+            put("date", DatesUtil.toString(schedule.date))
+            put("tag", schedule.tag)
+        }
+        db.insert("schedule", null, value)
+    } catch (exception: RuntimeException) {
+        Log.e("SQLite", "addSchedule error", exception)
+    }
+
+    private fun upgradeSchedule(schedule: Schedule) = try {
+        val db = this.writableDatabase
+        var value = ContentValues().apply {
+            put("title", schedule.title)
+            put("content", schedule.content)
+            put("tag", schedule.tag)
+        }
+        db.update("schedule", value, "id = ?", arrayOf(schedule.id.toString()))
+    } catch (exception: RuntimeException) {
+        Log.e("SQLite", "upgradeSchedule error", exception)
     }
 }

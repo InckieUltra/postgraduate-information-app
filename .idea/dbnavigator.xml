@@ -35,6 +35,11 @@
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="b6d33f59-29ed-4eaf-a84b-038a7119ffd3" dataset="main.schedule" active-filter-id="5582db42-7c4f-4b1f-81d9-170bdb3c1570">
+      <filter id="5582db42-7c4f-4b1f-81d9-170bdb3c1570" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    </filter-actions>
+  </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
   </component>
