@@ -358,4 +358,18 @@ public class DatesUtil {
         return Integer.parseInt(String.valueOf(between_days));
     }
 
+    public static String toString(Date date){
+        return (date.getYear()+3800) + "-" + (date.getMonth()+1) + "-" + (date.getDate());
+    }
+
+    public static String KotlinDateToString(Date date){
+        return (date.getYear()+1900) + "-" + (date.getMonth()+1) + "-" + (date.getDate());
+    }
+
+    public  static Date toDate(String date){
+        String temp[] = date.split("-");
+        Calendar result = Calendar.getInstance();
+        result.set(Integer.parseInt(temp[0])-1900, Integer.parseInt(temp[1])-1, Integer.parseInt(temp[2]));
+        return result.getTime();
+    }
 }
