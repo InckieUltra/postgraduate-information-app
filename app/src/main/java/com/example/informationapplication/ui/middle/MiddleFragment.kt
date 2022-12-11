@@ -11,7 +11,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.informationapplication.databinding.FragmentMiddleBinding
+import okhttp3.internal.notifyAll
 import java.util.*
 
 class MiddleFragment : Fragment() {
@@ -20,6 +22,10 @@ class MiddleFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var viewModel: MiddleViewModel
+    private lateinit var scheduleDB: ScheduleDataHelper
+    private var adapter: ScheduleAdapter? = null
+    private var chosenDate: String = "1900-1-1"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,21 +33,33 @@ class MiddleFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val middleViewModel =
-            ViewModelProvider(this).get(MiddleViewModel::class.java)
+            ViewModelProvider(this)[MiddleViewModel::class.java]
+        viewModel = middleViewModel
 
         _binding = FragmentMiddleBinding.inflate(inflater, container, false)
         val root: View = binding.root
         val db = ScheduleDataHelper(this.context, 1)
+        scheduleDB = db
 
         val textView: TextView = binding.currentDateText
         // choosing a certain date on calendarView
         val today: Date = DatesUtil.getDayBegin()
+        chosenDate = DatesUtil.KotlinDateToString(today)
+
+        val recyclerView = binding.recycler
+        refresh(middleViewModel, db, chosenDate)
+        val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
+        recyclerView.layoutManager = layoutManager
+        adapter = ScheduleAdapter(middleViewModel.scheduleList, this.activity)
+        adapter!!.notifyDataSetChanged()
+        recyclerView.adapter = adapter
+
         val cal: Calendar = Calendar.getInstance()
         val calendarView: CalendarView = binding.calendarView
         calendarView.setOnDateChangeListener {
-                calendarView, year, month, day ->
-                    val toast: Toast = Toast.makeText(calendarView.context, "您选择了" + year + "年" + (month+1) + "月" + day + "日。", Toast.LENGTH_SHORT)
-                    toast.show()
+                _calendarView, year, month, day ->
+                    val toast: Toast = Toast.makeText(_calendarView.context, "您选择了" + year + "年" + (month+1) + "月" + day + "日。", Toast.LENGTH_SHORT)
+//                    toast.show()
 
                     cal.set(year, month, day)
                     val currentChosenDate: Date = cal.time
@@ -56,7 +74,12 @@ class MiddleFragment : Fragment() {
                         diff == -2 -> "前天"
                         else -> ""
                     })
-                    db.writableDatabase
+
+                    chosenDate = DatesUtil.KotlinDateToString(currentChosenDate)
+                    refresh(middleViewModel, db, chosenDate)
+                    adapter = ScheduleAdapter(middleViewModel.scheduleList, this.activity)
+                    recyclerView.adapter!!.notifyDataSetChanged()
+
         }
 
         val addScheduleButton = binding.addScheduleButton
@@ -82,14 +105,33 @@ class MiddleFragment : Fragment() {
         _binding = null
     }
 
-    private fun addSchedule(schedule: Schedule, db: ScheduleDataHelper) {
-
-        val value = ContentValues()
-        value.put("title", schedule.title)
-        value.put("content", schedule.content)
-        value.put("date", (schedule.date.year+1900).toString() + "-" + (schedule.date.month+1).toString() + "-" + schedule.date.date.toString())
-        value.put("tag", schedule.tag)
-
-        db.writableDatabase.insert("schedule", null, value)
+    private fun refresh(viewModel: MiddleViewModel, db: ScheduleDataHelper, date: String) {
+        viewModel.scheduleList.clear()
+        val cursor = db.readableDatabase.query("schedule", null, "date = ?",
+            arrayOf(date), null, null, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val schedule = Schedule()
+                schedule.id = cursor.getInt(cursor.getColumnIndex("id"))
+                schedule.title = cursor.getString(cursor.getColumnIndex("title"))
+                schedule.content = cursor.getString(cursor.getColumnIndex("content"))
+                schedule.date = DatesUtil.toDate(date)
+                schedule.tag = cursor.getString(cursor.getColumnIndex("tag"))
+                viewModel.scheduleList.add(schedule)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        binding.recycler.adapter = ScheduleAdapter(viewModel.scheduleList, this.activity)
     }
+
+    override fun onResume() {
+        super.onResume()
+        refresh(viewModel, scheduleDB, chosenDate)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        refresh(viewModel, scheduleDB, chosenDate)
+    }
+
 }
