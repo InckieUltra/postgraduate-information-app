@@ -36,6 +36,12 @@
                 app:fab_addButtonSize="mini">
 
                 <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/getwc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="#888888"/>
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
                     android:id="@+id/reddan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

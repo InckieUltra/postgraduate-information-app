@@ -1,6 +1,10 @@
 package com.example.informationapplication.ui.right
 
+import android.R.attr.src
+import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -26,7 +31,11 @@ import master.flame.danmaku.danmaku.model.android.Danmakus
 import master.flame.danmaku.danmaku.model.android.SpannedCacheStuffer
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser
 import java.io.File
+import java.io.IOException
+import java.io.InputStream
 import java.lang.Thread.sleep
+import java.net.HttpURLConnection
+import java.net.URL
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -49,6 +58,7 @@ class RightFragment : Fragment() {
     var exit:Boolean=false
     val format:SimpleDateFormat= SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     var mydancolor: Int = Color.BLUE;
+    var wcurl: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -120,7 +130,7 @@ class RightFragment : Fragment() {
                 list.clear()
                 if(exit)break
                 try {
-                    Log.d("t1",uid.toString()+" "+lastFetch)
+                    //Log.d("t1",uid.toString()+" "+lastFetch)
 
                     var Cal:Calendar = java.util.Calendar.getInstance();
 
@@ -130,6 +140,7 @@ class RightFragment : Fragment() {
 
                     //MySQL 语句
                     val sql = "select * from danmu where time>\'"+lastFetch+"\' and time > \'"+format.format(Cal.getTime())+"\' order by time limit 5"
+                    val sql2 = "select url from wcurl where type = 1 order by id limit 1"
                     if (conn != null && ! conn.isClosed()) {
                         //Log.d("t1", "conn success")
                         ps = conn.prepareStatement(sql) as PreparedStatement
@@ -149,14 +160,20 @@ class RightFragment : Fragment() {
                                 }
                             }
                         }
+                        ps = conn.prepareStatement(sql2) as PreparedStatement
+                        if (ps != null) {
+                            rs = ps.executeQuery()
+                            if (rs != null) {
+                                rs.next()
+                                wcurl = rs.getString("url")
+                            }
+                        }
                     }
                 } catch (e: SQLException) {
                     closeAll(conn,ps,rs)
                     e.printStackTrace()
                 }
                 GlobalScope.launch(Dispatchers.Main) {
-                    //GlobalScope开启协程：main
-                    Log.d("TAG", "GlobalScope开启协程：" + Thread.currentThread().name)
                     //可以做UI操作
                     for(item in list) {
                         addDanmaku(false, item.content,false, item.color)
@@ -288,6 +305,17 @@ class RightFragment : Fragment() {
                 val editor = prefs?.edit()
                 editor?.putInt("color", Color.GREEN)
                 editor?.commit()
+                if (binding.changedancolor != null && binding.changedancolor.isExpanded()) {
+                    binding.changedancolor.collapse();
+                }
+            }
+        })
+        binding.getwc.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?){
+                /**kotlin显示 alertDialog**/
+                    var builder = ImageDialog(requireContext(),wcurl)
+                    builder.setTitle("弹幕树洞之词云")
+                    builder.show()
                 if (binding.changedancolor != null && binding.changedancolor.isExpanded()) {
                     binding.changedancolor.collapse();
                 }
