@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import com.example.informationapplication.MainActivity
 import com.example.informationapplication.R
 import com.example.informationapplication.databinding.ActivityScheduleBinding
@@ -17,7 +18,7 @@ class ScheduleActivity : AppCompatActivity() {
     private var _binding: ActivityScheduleBinding? = null
     private val binding get() = _binding!!
 
-    private var initSchedule: Schedule? = null
+    private var initSchedule: Schedule = Schedule()
     private val db: ScheduleDataHelper = ScheduleDataHelper(this, 1)
     private lateinit var dateTextView: TextView
     private lateinit var cancelButton: Button
@@ -39,7 +40,12 @@ class ScheduleActivity : AppCompatActivity() {
         val root: View = binding.root
         setContentView(root)
 
-        // TODO fill initSchedule
+        if (!intent.getBooleanExtra("isNew", true)) {
+            initSchedule.id = intent.getIntExtra("id", -1)
+            initSchedule.title = intent.getStringExtra("title").toString()
+            initSchedule.content = intent.getStringExtra("content").toString()
+            initSchedule.tag = intent.getStringExtra("tag").toString()
+        }
 
         // show date text
         var dateText: String = "日期: "
@@ -68,7 +74,7 @@ class ScheduleActivity : AppCompatActivity() {
 
         when{
             intent.getBooleanExtra("isNew", true) -> editSchedule()
-            else -> checkSchedule(initSchedule) // TODO show a schedule
+            else -> checkSchedule(initSchedule)
         }
     }
 
@@ -83,6 +89,12 @@ class ScheduleActivity : AppCompatActivity() {
         contentText.isFocusableInTouchMode = true
         contentText.requestFocus()
 
+        if (initSchedule!!.tag == null) tagSelector.check(R.id.box1)
+        else tagSelector.check(initSchedule!!.tag.toInt())
+        tagSelector.children.forEach {
+            it.isClickable = true
+        }
+
         editButton.setOnClickListener {
             // done
             db.addOrUpdateSchedule(this.createNewSchedule())
@@ -96,7 +108,6 @@ class ScheduleActivity : AppCompatActivity() {
     private fun checkSchedule(schedule: Schedule?){
         editButton.text = "编辑"
 
-        // TODO show a schedule
         titleText.setText(initSchedule!!.title)
         titleText.focusable = View.NOT_FOCUSABLE
         titleText.isFocusableInTouchMode = false
@@ -105,6 +116,11 @@ class ScheduleActivity : AppCompatActivity() {
         contentText.focusable = View.NOT_FOCUSABLE
         contentText.isFocusableInTouchMode = false
         //contentText.setText("test")
+
+        tagSelector.check(initSchedule!!.tag.toInt())
+        tagSelector.children.forEach {
+            it.isClickable = false
+        }
 
         editButton.setOnClickListener {
             // edit

@@ -25,7 +25,7 @@ class ScheduleDataHelper(private val context: Context?, version: Int): SQLiteOpe
     }
 
     fun addOrUpdateSchedule(schedule: Schedule) {
-        if (schedule.id == null) {
+        if (schedule.id == null || schedule.id!! < 0) {
             addSchedule(schedule)
         }
         else {

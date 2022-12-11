@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.informationapplication.databinding.FragmentMiddleBinding
+import okhttp3.internal.notifyAll
 import java.util.*
 
 class MiddleFragment : Fragment() {
@@ -49,7 +50,8 @@ class MiddleFragment : Fragment() {
         refresh(middleViewModel, db, chosenDate)
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = layoutManager
-        adapter = ScheduleAdapter(middleViewModel.scheduleList)
+        adapter = ScheduleAdapter(middleViewModel.scheduleList, this.activity)
+        adapter!!.notifyDataSetChanged()
         recyclerView.adapter = adapter
 
         val cal: Calendar = Calendar.getInstance()
@@ -75,7 +77,7 @@ class MiddleFragment : Fragment() {
 
                     chosenDate = DatesUtil.KotlinDateToString(currentChosenDate)
                     refresh(middleViewModel, db, chosenDate)
-                    adapter = ScheduleAdapter(middleViewModel.scheduleList)
+                    adapter = ScheduleAdapter(middleViewModel.scheduleList, this.activity)
                     recyclerView.adapter!!.notifyDataSetChanged()
 
         }
@@ -119,10 +121,16 @@ class MiddleFragment : Fragment() {
             } while (cursor.moveToNext())
         }
         cursor.close()
+        binding.recycler.adapter = ScheduleAdapter(viewModel.scheduleList, this.activity)
     }
 
     override fun onResume() {
         super.onResume()
+        refresh(viewModel, scheduleDB, chosenDate)
+    }
+
+    override fun onStart() {
+        super.onStart()
         refresh(viewModel, scheduleDB, chosenDate)
     }
 
