@@ -1,6 +1,7 @@
 package com.example.informationapplication.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.informationapplication.databinding.FragmentLeftBinding
 import com.example.informationapplication.ui.home.adapter.ArticleItemAdapter
+import com.example.informationapplication.ui.home.adapter.ArticleItemAdapter.OnLoadMoreListener
 import com.example.informationapplication.ui.home.entity.ArticleItem
 
 class InformationFragment : Fragment() {
@@ -19,9 +21,6 @@ class InformationFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-
-    private var currentPage = 0
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,13 +37,7 @@ class InformationFragment : Fragment() {
         val adapter = ArticleItemAdapter(articleItemList)
         val swipeRefreshLayout:SwipeRefreshLayout = binding.articleSwipeRefresh
 
-        adapter.setOnLoadMoreListener(object : ArticleItemAdapter.OnLoadMoreListener {
-            override fun onLoadMore(currentPage: Int) {
-                this@InformationFragment.currentPage = currentPage
-                informationModel.refreshArticleItems(swipeRefreshLayout)
 
-            }
-        })
         informationModel.getArticleItems().observe(viewLifecycleOwner) {
             if (it != null && it.isNotEmpty()) {
                 adapter.setArticleList(it)
@@ -56,11 +49,18 @@ class InformationFragment : Fragment() {
 
         val layoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
+        adapter.setOnLoadMoreListener(object : OnLoadMoreListener {
+            override fun onLoadMore(currentPage: Int) {
+                Log.d("fragment test", currentPage.toString())
+                informationModel.loadMore(adapter,currentPage)
+            }
+        })
         recyclerView.adapter = adapter
-
         swipeRefreshLayout.setOnRefreshListener {
             informationModel.refreshArticleItems(swipeRefreshLayout)
         }
+
+
 
         return root
     }
