@@ -73,6 +73,7 @@ class RightFragment : Fragment() {
 
         val prefs = requireActivity().getSharedPreferences("danconfig",0)
         mydancolor = prefs.getInt("color",Color.BLUE)
+        binding.daninput.setBackgroundColor(Color.WHITE)
 
         val f = File(
             "/data/data/com.example.informationapplication/shared_prefs/userinfo.xml"
@@ -140,7 +141,7 @@ class RightFragment : Fragment() {
 
                     //MySQL 语句
                     val sql = "select * from danmu where time>\'"+lastFetch+"\' and time > \'"+format.format(Cal.getTime())+"\' order by time limit 5"
-                    val sql2 = "select url from wcurl where type = 1 order by id limit 1"
+                    val sql2 = "select url from wcurl where type = 1 order by id desc limit 1"
                     if (conn != null && ! conn.isClosed()) {
                         //Log.d("t1", "conn success")
                         ps = conn.prepareStatement(sql) as PreparedStatement
