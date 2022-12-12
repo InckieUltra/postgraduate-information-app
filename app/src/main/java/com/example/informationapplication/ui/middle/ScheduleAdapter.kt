@@ -5,12 +5,16 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.informationapplication.R
+import java.lang.Boolean.TYPE
+import java.lang.reflect.Type
 
-class ScheduleAdapter(private val scheduleList: List<Schedule>, private val activity: FragmentActivity?): RecyclerView.Adapter<ScheduleAdapter.ViewHolder>() {
+class ScheduleAdapter(private val scheduleList: MutableList<Schedule>, private val activity: Fragment?): RecyclerView.Adapter<ScheduleAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val scheduleTitle: TextView = view.findViewById(R.id.scheduleTitle)
@@ -20,7 +24,7 @@ class ScheduleAdapter(private val scheduleList: List<Schedule>, private val acti
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.schedule_item, parent, false)
         val viewHolder:ViewHolder = ViewHolder(view)
-        viewHolder.scheduleContent.setOnClickListener {
+        viewHolder.itemView.setOnClickListener {
             val position = viewHolder.bindingAdapterPosition
             val schedule = scheduleList[position]
             val intent: Intent = Intent(parent.context, ScheduleActivity::class.java)
@@ -34,6 +38,22 @@ class ScheduleAdapter(private val scheduleList: List<Schedule>, private val acti
             intent.putExtra("tag", schedule.tag)
             intent.putExtra("isNew", false)
             activity!!.startActivity(intent)
+        }
+
+        viewHolder.itemView.setOnLongClickListener {
+            val position = viewHolder.bindingAdapterPosition
+            val menu: PopupMenu = PopupMenu(parent.context, it)
+            menu.menuInflater.inflate(R.menu.schedule_menu, menu.menu)
+            menu.setForceShowIcon(true)
+//            val method = menu.javaClass.getDeclaredMethod("setOptionalIconsVisible", Boolean.javaClass)
+//            method.isAccessible = true
+//            method.invoke(menu, true)
+            menu.setOnMenuItemClickListener {
+                (activity as MiddleFragment).deleteSchedule(scheduleList[position])
+                return@setOnMenuItemClickListener true
+            }
+            menu.show()
+            return@setOnLongClickListener true
         }
         return viewHolder
     }

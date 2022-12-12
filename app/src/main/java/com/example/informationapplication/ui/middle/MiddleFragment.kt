@@ -50,7 +50,7 @@ class MiddleFragment : Fragment() {
         refresh(middleViewModel, db, chosenDate)
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = layoutManager
-        adapter = ScheduleAdapter(middleViewModel.scheduleList, this.activity)
+        adapter = ScheduleAdapter(middleViewModel.scheduleList, this)
         adapter!!.notifyDataSetChanged()
         recyclerView.adapter = adapter
 
@@ -77,7 +77,7 @@ class MiddleFragment : Fragment() {
 
                     chosenDate = DatesUtil.KotlinDateToString(currentChosenDate)
                     refresh(middleViewModel, db, chosenDate)
-                    adapter = ScheduleAdapter(middleViewModel.scheduleList, this.activity)
+                    adapter = ScheduleAdapter(middleViewModel.scheduleList, this)
                     recyclerView.adapter!!.notifyDataSetChanged()
 
         }
@@ -121,7 +121,13 @@ class MiddleFragment : Fragment() {
             } while (cursor.moveToNext())
         }
         cursor.close()
-        binding.recycler.adapter = ScheduleAdapter(viewModel.scheduleList, this.activity)
+        binding.recycler.adapter = ScheduleAdapter(viewModel.scheduleList, this)
+    }
+
+
+    fun deleteSchedule (schedule: Schedule) {
+        scheduleDB.deleteSchedule(schedule)
+        refresh(viewModel, scheduleDB, chosenDate)
     }
 
     override fun onResume() {

@@ -33,6 +33,13 @@ class ScheduleDataHelper(private val context: Context?, version: Int): SQLiteOpe
         }
     }
 
+    fun deleteSchedule(schedule: Schedule) {
+        if (schedule.id != null && schedule.id != -1) {
+            deleteScheduleFromDB(schedule.id!!)
+        }
+        else return
+    }
+
     private fun addSchedule(schedule: Schedule) = try {
         val db = this.writableDatabase
         var value = ContentValues().apply {
@@ -56,5 +63,12 @@ class ScheduleDataHelper(private val context: Context?, version: Int): SQLiteOpe
         db.update("schedule", value, "id = ?", arrayOf(schedule.id.toString()))
     } catch (exception: RuntimeException) {
         Log.e("SQLite", "upgradeSchedule error", exception)
+    }
+
+    private fun deleteScheduleFromDB(id: Int) = try {
+        val db = this.writableDatabase
+        db.delete("schedule", "id = ?", arrayOf(id.toString()))
+    } catch (exception: RuntimeException) {
+        Log.e("SQLite", "deleteSchedule error", exception)
     }
 }
