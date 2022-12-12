@@ -1,5 +1,6 @@
 package com.example.informationapplication.ui.middle
 
+import com.example.informationapplication.R
 import java.util.*
 
 class Schedule {
@@ -7,5 +8,5 @@ class Schedule {
     var title : String = "新建日程"
     var content : String = "准备做什么？"
     lateinit var date : Date
-    var tag : String = "default"
+    var tag : String = R.id.box1.toString()
 }
