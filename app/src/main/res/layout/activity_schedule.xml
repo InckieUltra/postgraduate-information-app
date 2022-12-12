@@ -79,11 +79,10 @@
                 android:layout_marginBottom="12dp"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
-                android:textAlignment="textStart"
-                android:paddingBottom="192dp"
+                android:gravity="start"
                 android:paddingStart="12dp"
                 android:background="@drawable/editor_gray_background"
-                android:inputType="text"
+                android:inputType="text|textMultiLine"
                 android:hint="准备做什么？">
 
             </EditText>

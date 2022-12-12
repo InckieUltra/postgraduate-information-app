@@ -12,9 +12,9 @@
             tools:layout="@layout/fragment_left"/>
 
     <fragment
-            android:id="@+id/middle_frag"
+            android:id="@+id/calender_frag"
             android:name="com.example.informationapplication.ui.middle.MiddleFragment"
-            android:label="middle"
+            android:label="日程安排"
             tools:layout="@layout/fragment_middle"/>
 
     <fragment
