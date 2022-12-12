@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import com.example.informationapplication.R
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
+import java.lang.Thread.sleep
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
@@ -40,7 +42,8 @@ class ImageDialog(context: Context?) : AlertDialog(context){
         setView(inflate)
         //设置点击别的区域不关闭页面
         setCancelable(true)
-
+        val progbar: ProgressBar = inflate.findViewById<ProgressBar>(R.id.wc_bar)
+        progbar.setProgress(25,true)
         // 开启一个单独线程进行网络读取
         Thread(Runnable {
             var bitmap: Bitmap ? = null
@@ -53,8 +56,15 @@ class ImageDialog(context: Context?) : AlertDialog(context){
                 httpURLConnection.connectTimeout = 2000
                 // 获取图片输入流
                 var inputStream = httpURLConnection.inputStream
+                GlobalScope.launch(Dispatchers.Main) {
+                    //可以做UI操作
+                    val myimage = inflate.findViewById<ImageView>(R.id.wc_danmaku)
+                    myimage.setImageBitmap(bitmap)
+                    progbar.setProgress(50,true)
+                }
                 // 获取网络响应结果
                 var responseCode = httpURLConnection.responseCode
+                sleep(1000)
 
                 // 获取正常
                 if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -64,6 +74,7 @@ class ImageDialog(context: Context?) : AlertDialog(context){
                         //可以做UI操作
                         val myimage = inflate.findViewById<ImageView>(R.id.wc_danmaku)
                         myimage.setImageBitmap(bitmap)
+                        progbar.setProgress(100,true)
                     }
                 }
             } catch(e: IOException) { // 捕获异常 (例如网络异常)
