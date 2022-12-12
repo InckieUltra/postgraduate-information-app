@@ -7,14 +7,16 @@ abstract class RecyclerOnScrollerListener(var recyclerView: RecyclerView) :
     RecyclerView.OnScrollListener() {
     private var currentPage: Int = 1
     private var isLoading: Boolean = false
-    private var isCanLoadMore: Boolean = false
+    private var isCanLoadMore: Boolean = true
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
         if (isCanLoadMore) {
-            currentPage++
-            onLoadMore(currentPage)
-            isLoading = true
+            if (isSlideToBottom()) {
+                currentPage++
+                onLoadMore(currentPage)
+                isLoading = true
+            }
         }
     }
 
@@ -25,17 +27,17 @@ abstract class RecyclerOnScrollerListener(var recyclerView: RecyclerView) :
         val totalItemCount = layoutManager?.itemCount
         val visibleItemCount = layoutManager?.childCount
         val lastVisiblePosition = layoutManager?.findLastVisibleItemPosition()
-        if (visibleItemCount != null) {
-            return !isLoading && visibleItemCount > 0 && lastVisiblePosition == totalItemCount
+        if (visibleItemCount != null && totalItemCount != null) {
+            return !isLoading && visibleItemCount > 0 && lastVisiblePosition == (totalItemCount - 1)
         }
         return false
     }
 
-    fun setCanLoadMore(load:Boolean){
+    fun setCanLoadMore(load: Boolean) {
         isCanLoadMore = load
     }
 
-    fun setLoading(load:Boolean){
+    fun setLoading(load: Boolean) {
         isLoading = load
     }
 }

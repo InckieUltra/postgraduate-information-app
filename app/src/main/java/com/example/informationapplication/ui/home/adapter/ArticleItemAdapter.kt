@@ -17,31 +17,30 @@ import com.example.informationapplication.ui.home.utils.RecyclerOnScrollerListen
 
 
 class ArticleItemAdapter(private var items: List<ArticleItem>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private lateinit var mContext:Context
+    private lateinit var mContext: Context
     private lateinit var listener: RecyclerOnScrollerListener
-    private var canLoadMore:Boolean = true
+    private var canLoadMore: Boolean = true
     private lateinit var animation: Animation
 
     private val VIEW_TYPE_CONTENT = 0
     private val VIEW_TYPE_FOOTER = 1
-    private val PER_PAGE = 15
 
-    inner class ContentViewHolder(view: View):RecyclerView.ViewHolder(view){
+    inner class ContentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        var itemTitle:TextView = view.findViewById(R.id.itemTitle)
-        var itemDate:TextView = view.findViewById(R.id.itemDate)
+        var itemTitle: TextView = view.findViewById(R.id.itemTitle)
+        var itemDate: TextView = view.findViewById(R.id.itemDate)
     }
 
-    inner class FooterViewHolder(view: View):RecyclerView.ViewHolder(view){
+    inner class FooterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun showTextOnly(s: String) {
-            Log.d("Adapt test","show Loading")
+            Log.d("Adapt test", "show Loading")
             ivImage.visibility = View.INVISIBLE
             tvName.text = s
         }
 
-        fun showLoading(){
+        fun showLoading() {
             Log.i("mytest", "show loading")
             ivImage.setImageResource(R.mipmap.ic_launcher)
             tvName.text = "正在加载"
@@ -53,64 +52,62 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        mContext = parent.context
         animation = AnimationUtils.loadAnimation(mContext, R.anim.loading)
         animation.interpolator = LinearInterpolator()
         return if (viewType == VIEW_TYPE_CONTENT) {
-            ContentViewHolder(LayoutInflater.from(mContext).inflate(R.layout.article_item, parent, false))
+            ContentViewHolder(
+                LayoutInflater.from(mContext).inflate(R.layout.article_item, parent, false)
+            )
         } else {
-            FooterViewHolder(LayoutInflater.from(mContext).inflate(R.layout.footer_item, parent, false))
+            FooterViewHolder(
+                LayoutInflater.from(mContext).inflate(R.layout.footer_item, parent, false)
+            )
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-       if(holder.itemViewType == VIEW_TYPE_CONTENT){
-           val item = items[position]
-           val contentViewHolder = holder as ContentViewHolder
-           contentViewHolder.itemTitle.text = item.title
-           contentViewHolder.itemDate.text = item.date
-       } else {
-           val footerViewHolder = holder as FooterViewHolder
-           if(canLoadMore){
-               footerViewHolder.showLoading()
-           } else {
-
-               footerViewHolder.showTextOnly("无更多数据")
-           }
-       }
+        if (holder.itemViewType == VIEW_TYPE_CONTENT) {
+            val item = items[position]
+            val contentViewHolder = holder as ContentViewHolder
+            contentViewHolder.itemTitle.text = item.title
+            contentViewHolder.itemDate.text = item.date
+        } else {
+            val footerViewHolder = holder as FooterViewHolder
+            if (canLoadMore) {
+                footerViewHolder.showLoading()
+            } else {
+                footerViewHolder.showTextOnly("无更多数据")
+            }
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if(position == itemCount - 1){
+        return if (position == itemCount - 1) {
             VIEW_TYPE_FOOTER
         } else
             VIEW_TYPE_CONTENT
     }
 
-    
 
-    override fun getItemCount() = items.size
+    override fun getItemCount() = items.size + 1
 
-    fun setArticleList(newItems: List<ArticleItem>){
+    fun setArticleList(newItems: List<ArticleItem>) {
         items = newItems
     }
 
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
+
         listener = object : RecyclerOnScrollerListener(recyclerView) {
             override fun onLoadMore(currentPage: Int) {
                 Log.i("loadingtest", "currentPage: $currentPage")
-                mOnLoadMoreListener!!.onLoadMore(currentPage)
+                mOnLoadMoreListener?.onLoadMore(currentPage)
             }
         }
+        Log.d("test",mOnLoadMoreListener.toString())
         recyclerView.addOnScrollListener(listener)
-
-        //初始化的时候如果未填满一页，那么肯定就没有更多数据了
-        if (items.size < PER_PAGE) {
-            setCanLoadMore(false)
-        } else {
-            setCanLoadMore(true)
-        }
     }
 
 
@@ -124,6 +121,7 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
     * 数据加载完毕时执行setCanLoadMore()，此时isLoading都置为false
     * */
     fun setCanLoadMore(isCanLoadMore: Boolean) {
+        Log.d("set","false")
         canLoadMore = isCanLoadMore
         listener.setCanLoadMore(isCanLoadMore)
         listener.setLoading(false)
