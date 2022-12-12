@@ -2,6 +2,6 @@
     <string name="app_name">InformationApplication</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_home">研究生资讯</string>
-    <string name="title_dashboard">Middle</string>
+    <string name="title_dashboard">日程安排</string>
     <string name="title_notifications">Right</string>
 </resources>

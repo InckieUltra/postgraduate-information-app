@@ -83,6 +83,7 @@ class ScheduleActivity : AppCompatActivity() {
 
         titleText.focusable = View.FOCUSABLE
         titleText.isFocusableInTouchMode = true
+        titleText.isEnabled = true
         titleText.requestFocus()
 
         contentText.focusable = View.FOCUSABLE
@@ -110,6 +111,7 @@ class ScheduleActivity : AppCompatActivity() {
 
         titleText.setText(initSchedule!!.title)
         titleText.focusable = View.NOT_FOCUSABLE
+        titleText.isEnabled = false
         titleText.isFocusableInTouchMode = false
 
         contentText.setText(initSchedule!!.content)
