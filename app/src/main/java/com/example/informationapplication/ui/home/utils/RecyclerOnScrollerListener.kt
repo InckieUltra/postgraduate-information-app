@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 abstract class RecyclerOnScrollerListener(var recyclerView: RecyclerView) :
     RecyclerView.OnScrollListener() {
-    private var currentPage: Int = 1
+    private var currentPage: Int = 0
     private var isLoading: Boolean = false
     private var isCanLoadMore: Boolean = true
 
@@ -39,5 +39,11 @@ abstract class RecyclerOnScrollerListener(var recyclerView: RecyclerView) :
 
     fun setLoading(load: Boolean) {
         isLoading = load
+    }
+
+    fun reset(){
+        currentPage = 0
+        isLoading = false
+        isCanLoadMore = true
     }
 }

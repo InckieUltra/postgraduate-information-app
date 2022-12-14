@@ -1,28 +1,26 @@
 package com.example.informationapplication.ui.home
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.informationapplication.ui.home.adapter.ArticleItemAdapter
 import com.example.informationapplication.ui.home.entity.ArticleItem
+import com.example.informationapplication.ui.home.network.ArticleSpider
+import com.example.informationapplication.ui.home.network.HttpUtil
 import kotlin.concurrent.thread
 
 class InformationModel : ViewModel() {
-    private val PER_PAGE = 50
+    private val PER_PAGE = 80
     private var currentPage = 0
-    var articles = listOf(
-        ArticleItem("a", "2020-11-20", "www.baidu.com"),
-        ArticleItem("b", "2020-11-22", "www.baidu.com"),
-        ArticleItem("c", "2020-11-24", "www.baidu.com"),
-        ArticleItem("d", "2020-11-24", "www.baidu.com"),
-    )
+    private var baseUrl = "https://yz.chsi.com.cn/kyzx/yxzc/"
 
     var list: MutableList<ArticleItem> = ArrayList()
 
     private val articleItemList: MutableLiveData<List<ArticleItem>> by lazy {
         MutableLiveData<List<ArticleItem>>().also {
-            loadArticleItems()
+            list
         }
     }
 
@@ -32,17 +30,14 @@ class InformationModel : ViewModel() {
 
     private fun loadArticleItems() {
         thread(start = true) {
+            currentPage = 0
             list.clear()
-            repeat(50) {
-                val index = (articles.indices).random()
-                list.add(articles[index])
-            }
             articleItemList.postValue(list)
-            currentPage = 1
         }
     }
 
-    fun refreshArticleItems(swipeRefreshLayout: SwipeRefreshLayout) {
+    fun refreshArticleItems(adapter: ArticleItemAdapter, swipeRefreshLayout: SwipeRefreshLayout) {
+        adapter.resetListener()
         loadArticleItems()
         swipeRefreshLayout.isRefreshing = false
     }
@@ -50,15 +45,16 @@ class InformationModel : ViewModel() {
     fun loadMore(adapter: ArticleItemAdapter, currentPage: Int) {
         thread(start = true) {
             this.currentPage = currentPage
-            repeat(50) {
-                val index = (articles.indices).random()
-                list.add(articles[index])
-            }
-//            articleSpider.getAllArticleItem("")
-            Thread.sleep(2000)
+            Log.d("currentPage",currentPage.toString())
+            val start = PER_PAGE * (currentPage - 1)
+            val url = "$baseUrl?start=$start"
+            val html = HttpUtil.okGetArticle(url)
+            val tmp = ArticleSpider.getAllArticleItem(html)
+            list.addAll(tmp)
             if (list.size == currentPage * PER_PAGE) {
                 adapter.setCanLoadMore(true)
             } else {
+                Log.d("currentPage",currentPage.toString())
                 adapter.setCanLoadMore(false)
             }
             articleItemList.postValue(list)
