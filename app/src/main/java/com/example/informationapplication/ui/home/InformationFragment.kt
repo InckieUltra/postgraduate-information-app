@@ -5,20 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.viewpager2.widget.ViewPager2
 import com.example.informationapplication.databinding.FragmentLeftBinding
-import com.example.informationapplication.ui.home.adapter.ArticleItemAdapter
-import com.example.informationapplication.ui.home.adapter.ArticleItemAdapter.OnLoadMoreListener
-import com.example.informationapplication.ui.home.entity.ArticleItem
+import com.example.informationapplication.ui.home.adapter.ViewPagerAdapter
+import com.example.informationapplication.ui.home.view.SubInformationFragment
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class InformationFragment : Fragment() {
 
-    private var _binding: FragmentLeftBinding? = null
+    private lateinit var tabLayout: TabLayout
+    private lateinit var viewPager: ViewPager2
+    private val fragmentList = ArrayList<Fragment>()
+    private lateinit var viewPagerAdapter: ViewPagerAdapter
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    private val titleList: List<String> = listOf("国家政策","院校政策","考研动态","复试指导","专硕巡展","推免面试")
+
+    private var _binding: FragmentLeftBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -26,38 +29,26 @@ class InformationFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val informationModel =
-            ViewModelProvider(this).get(InformationModel::class.java)
 
         _binding = FragmentLeftBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        tabLayout = binding.tabLayout
+        viewPager = binding.viewPager
 
-        val articleItemList:List<ArticleItem> = ArrayList()
-        val adapter = ArticleItemAdapter(articleItemList)
-        val swipeRefreshLayout:SwipeRefreshLayout = binding.articleSwipeRefresh
-
-
-        informationModel.getArticleItems().observe(viewLifecycleOwner) {
-            if (it != null) {
-                adapter.setArticleList(it)
-                adapter.notifyDataSetChanged()
-            }
+        for (item in titleList) {
+            fragmentList.add(SubInformationFragment.newInstance(item))
         }
+        viewPagerAdapter = ViewPagerAdapter(this, fragmentList, titleList)
+        viewPager.adapter = viewPagerAdapter
 
-        val recyclerView = binding.articleRecyclerView
-
-        val layoutManager = LinearLayoutManager(activity)
-        recyclerView.layoutManager = layoutManager
-        adapter.setOnLoadMoreListener(object : OnLoadMoreListener {
-            override fun onLoadMore(currentPage: Int) {
-                informationModel.loadMore(adapter,currentPage)
+        TabLayoutMediator(
+            tabLayout,
+            viewPager
+        ) { tab, position ->
+            run {
+                tab.text = titleList[position]
             }
-        })
-        recyclerView.adapter = adapter
-        swipeRefreshLayout.setOnRefreshListener {
-            informationModel.refreshArticleItems(adapter,swipeRefreshLayout)
-        }
-
+        }.attach()
 
 
         return root
@@ -68,7 +59,6 @@ class InformationFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 
 
 

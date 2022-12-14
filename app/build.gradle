@@ -65,6 +65,7 @@ dependencies {
     implementation 'com.facebook.litho:litho-widget:0.45.0'
     implementation 'com.facebook.litho:litho-widget-kotlin:0.45.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.databinding:databinding-runtime:7.1.2'
     kapt 'com.facebook.litho:litho-processor:0.45.0'
     // SoLoader
     implementation 'com.facebook.soloader:soloader:0.10.4'
