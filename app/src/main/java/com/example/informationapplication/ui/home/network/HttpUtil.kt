@@ -1,14 +1,20 @@
 package com.example.informationapplication.ui.home.network
 
-import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.IOException
 
 object HttpUtil {
-    fun okGetArticle(url:String, callback:Callback){
+    fun okGetArticle(url: String): String? {
         var html: String? = null
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
-        client.newCall(request).enqueue(callback)
+        try {
+            val response = client.newCall(request).execute()
+            html = response.body?.string()
+        } catch (e:IOException){
+            e.printStackTrace()
+        }
+        return html
     }
 }

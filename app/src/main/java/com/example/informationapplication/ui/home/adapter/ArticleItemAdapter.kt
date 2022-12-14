@@ -1,7 +1,6 @@
 package com.example.informationapplication.ui.home.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,13 +34,11 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
 
     inner class FooterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun showTextOnly(s: String) {
-            Log.d("Adapt test", "show Loading")
             ivImage.visibility = View.INVISIBLE
             tvName.text = s
         }
 
         fun showLoading() {
-            Log.i("mytest", "show loading")
             ivImage.setImageResource(R.mipmap.ic_launcher)
             tvName.text = "正在加载"
             ivImage.startAnimation(animation)
@@ -102,11 +99,9 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
 
         listener = object : RecyclerOnScrollerListener(recyclerView) {
             override fun onLoadMore(currentPage: Int) {
-                Log.i("loadingtest", "currentPage: $currentPage")
                 mOnLoadMoreListener?.onLoadMore(currentPage)
             }
         }
-        Log.d("test",mOnLoadMoreListener.toString())
         recyclerView.addOnScrollListener(listener)
     }
 
@@ -121,7 +116,6 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
     * 数据加载完毕时执行setCanLoadMore()，此时isLoading都置为false
     * */
     fun setCanLoadMore(isCanLoadMore: Boolean) {
-        Log.d("set","false")
         canLoadMore = isCanLoadMore
         listener.setCanLoadMore(isCanLoadMore)
         listener.setLoading(false)
@@ -138,4 +132,7 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
         mOnLoadMoreListener = listener
     }
 
+    fun resetListener(){
+        listener.reset()
+    }
 }

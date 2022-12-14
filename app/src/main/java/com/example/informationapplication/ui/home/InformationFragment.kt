@@ -1,7 +1,6 @@
 package com.example.informationapplication.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +38,7 @@ class InformationFragment : Fragment() {
 
 
         informationModel.getArticleItems().observe(viewLifecycleOwner) {
-            if (it != null && it.isNotEmpty()) {
+            if (it != null) {
                 adapter.setArticleList(it)
                 adapter.notifyDataSetChanged()
             }
@@ -51,13 +50,12 @@ class InformationFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         adapter.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore(currentPage: Int) {
-                Log.d("fragment test", currentPage.toString())
                 informationModel.loadMore(adapter,currentPage)
             }
         })
         recyclerView.adapter = adapter
         swipeRefreshLayout.setOnRefreshListener {
-            informationModel.refreshArticleItems(swipeRefreshLayout)
+            informationModel.refreshArticleItems(adapter,swipeRefreshLayout)
         }
 
 
