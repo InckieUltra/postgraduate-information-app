@@ -27,7 +27,6 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
     private val VIEW_TYPE_FOOTER = 1
 
     inner class ContentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
         var itemTitle: TextView = view.findViewById(R.id.itemTitle)
         var itemDate: TextView = view.findViewById(R.id.itemDate)
     }

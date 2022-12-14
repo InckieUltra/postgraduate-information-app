@@ -62,7 +62,9 @@ class InformationModel : ViewModel() {
         }
     }
 
-
+    fun setUrl(url:String){
+        baseUrl = url
+    }
 }
 
 
