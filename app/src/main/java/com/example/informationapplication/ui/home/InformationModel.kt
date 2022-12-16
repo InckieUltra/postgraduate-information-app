@@ -11,8 +11,11 @@ import com.example.informationapplication.ui.home.network.ArticleSpider
 import com.example.informationapplication.ui.home.network.HttpUtil
 import kotlin.concurrent.thread
 
+/**
+ * 研究生咨询数据类
+ */
 class InformationModel : ViewModel() {
-    private val PER_PAGE = 80
+    private var perPage = 80
     private var currentPage = 0
     private var baseUrl = "https://yz.chsi.com.cn/kyzx/yxzc/"
 
@@ -46,12 +49,12 @@ class InformationModel : ViewModel() {
         thread(start = true) {
             this.currentPage = currentPage
             Log.d("currentPage",currentPage.toString())
-            val start = PER_PAGE * (currentPage - 1)
+            val start = perPage * (currentPage - 1)
             val url = "$baseUrl?start=$start"
             val html = HttpUtil.okGetArticle(url)
             val tmp = ArticleSpider.getAllArticleItem(html)
             list.addAll(tmp)
-            if (list.size == currentPage * PER_PAGE) {
+            if (list.size == currentPage * perPage) {
                 adapter.setCanLoadMore(true)
             } else {
                 Log.d("currentPage",currentPage.toString())
@@ -64,6 +67,12 @@ class InformationModel : ViewModel() {
 
     fun setUrl(url:String){
         baseUrl = url
+    }
+
+    fun setPage(page: Int?) {
+        if (page != null) {
+            perPage = page
+        }
     }
 }
 

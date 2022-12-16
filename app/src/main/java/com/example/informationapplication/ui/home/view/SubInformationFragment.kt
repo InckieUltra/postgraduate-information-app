@@ -32,6 +32,15 @@ class SubInformationFragment : Fragment() {
             Pair("专硕巡展", "zsxz/"),
             Pair("推免面试", "zsjz/tmjz/")
         )
+    private val pageMap:Map<String,Int> = mapOf(
+        Pair("国家政策",40),
+        Pair("院校政策",80),
+        Pair("考研动态",50),
+        Pair("复试指导",50),
+        Pair("复试指导",60),
+        Pair("复试指导",30),
+        Pair("复试指导",80),
+    )
     private var _binding: FragmentSubInformationBinding? = null
     private val binding get() = _binding!!
 
@@ -53,6 +62,7 @@ class SubInformationFragment : Fragment() {
         val tail = titleMap[title]
         Log.d("tail", tail.toString())
         informationModel.setUrl("https://yz.chsi.com.cn/kyzx/$tail")
+        informationModel.setPage(pageMap[title])
         val articleItemList:List<ArticleItem> = ArrayList()
         val adapter = ArticleItemAdapter(articleItemList)
 
