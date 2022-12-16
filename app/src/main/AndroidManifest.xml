@@ -17,15 +17,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InformationApplication"
         tools:targetApi="31">
-
         <activity
-                android:name=".MainActivity"
-                android:exported="true"
-                android:label="@string/title_activity_main"/>
+            android:name=".ui.home.view.NewsContentActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
-                android:name=".ui.middle.ScheduleActivity"
-                android:exported="false"
-                android:label="ScheduleActivity"/>
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main" />
+        <activity
+            android:name=".ui.middle.ScheduleActivity"
+            android:exported="false"
+            android:label="ScheduleActivity" />
     </application>
 
 </manifest>

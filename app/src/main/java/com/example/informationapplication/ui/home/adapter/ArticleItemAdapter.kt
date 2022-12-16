@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.informationapplication.R
 import com.example.informationapplication.ui.home.entity.ArticleItem
 import com.example.informationapplication.ui.home.utils.RecyclerOnScrollerListener
+import com.example.informationapplication.ui.home.view.NewsContentActivity
 
 
 class ArticleItemAdapter(private var items: List<ArticleItem>) :
@@ -51,15 +52,21 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
         mContext = parent.context
         animation = AnimationUtils.loadAnimation(mContext, R.anim.loading)
         animation.interpolator = LinearInterpolator()
-        return if (viewType == VIEW_TYPE_CONTENT) {
-            ContentViewHolder(
+        if (viewType == VIEW_TYPE_CONTENT) {
+            val holder = ContentViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.article_item, parent, false)
             )
+            holder.itemView.setOnClickListener {
+                val articleItem = items[holder.absoluteAdapterPosition]
+                NewsContentActivity.actionStart(parent.context,articleItem.articleUrl)
+            }
+            return holder
         } else {
-            FooterViewHolder(
+            return FooterViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.footer_item, parent, false)
             )
         }
+
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -131,7 +138,7 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
         mOnLoadMoreListener = listener
     }
 
-    fun resetListener(){
+    fun resetListener() {
         listener.reset()
     }
 }

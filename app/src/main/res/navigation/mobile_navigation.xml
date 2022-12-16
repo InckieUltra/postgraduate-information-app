@@ -20,6 +20,6 @@
     <fragment
             android:id="@+id/right_frag"
             android:name="com.example.informationapplication.ui.right.RightFragment"
-            android:label="right"
+            android:label="弹幕讨论区"
             tools:layout="@layout/fragment_right"/>
 </navigation>

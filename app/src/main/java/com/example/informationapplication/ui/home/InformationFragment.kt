@@ -12,6 +12,9 @@ import com.example.informationapplication.ui.home.view.SubInformationFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
+/**
+ * 左页面
+ */
 class InformationFragment : Fragment() {
 
     private lateinit var tabLayout: TabLayout
