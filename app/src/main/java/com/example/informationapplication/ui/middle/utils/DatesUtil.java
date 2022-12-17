@@ -1,4 +1,4 @@
-package com.example.informationapplication.ui.middle;
+package com.example.informationapplication.ui.middle.utils;
 
 import java.sql.Timestamp;
 import java.text.ParseException;

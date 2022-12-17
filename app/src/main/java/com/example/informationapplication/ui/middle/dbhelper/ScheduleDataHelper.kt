@@ -1,10 +1,12 @@
-package com.example.informationapplication.ui.middle
+package com.example.informationapplication.ui.middle.dbhelper
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import com.example.informationapplication.ui.middle.entity.Schedule
+import com.example.informationapplication.ui.middle.utils.DatesUtil
 import java.lang.RuntimeException
 
 class ScheduleDataHelper(private val context: Context?, version: Int): SQLiteOpenHelper(context, "schedule.db", null, version) {

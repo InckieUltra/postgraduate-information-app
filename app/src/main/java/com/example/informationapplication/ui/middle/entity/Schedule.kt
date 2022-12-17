@@ -1,4 +1,4 @@
-package com.example.informationapplication.ui.middle
+package com.example.informationapplication.ui.middle.entity
 
 import com.example.informationapplication.R
 import java.util.*

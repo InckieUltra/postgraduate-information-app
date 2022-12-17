@@ -12,11 +12,12 @@ import android.widget.EditText
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.children
 import com.example.informationapplication.MainActivity
 import com.example.informationapplication.R
 import com.example.informationapplication.databinding.ActivityScheduleBinding
+import com.example.informationapplication.ui.middle.dbhelper.ScheduleDataHelper
+import com.example.informationapplication.ui.middle.entity.Schedule
 import java.util.*
 
 class ScheduleActivity : AppCompatActivity() {
@@ -152,28 +153,30 @@ class ScheduleActivity : AppCompatActivity() {
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        if(Objects.isNull(ev) && ev!!.action == MotionEvent.ACTION_DOWN){
+        if(!Objects.isNull(ev) && ev!!.action == MotionEvent.ACTION_DOWN){
             val view: View? = currentFocus
-            if(!Objects.isNull(view) && isTouchingEditText(view!!, ev)){
+            if(!Objects.isNull(view) && !isTouchingEditText(view!!, ev)){
+                // touch other places
                 hideSoftKeyBoard(view.windowToken)
             }
         }
-        return super.dispatchTouchEvent(ev);
+        return super.dispatchTouchEvent(ev)
     }
 
     private fun isTouchingEditText(view: View, ev: MotionEvent): Boolean {
         if(!Objects.isNull(view) && (view is EditText)){
-            var pos: IntArray = IntArray(2)
+            var pos = IntArray(2)
             view.getLocationInWindow(pos)
             val left = pos[0]
             val top = pos[1]
             val right = pos[0] + view.width
             val bottom = pos[1] + view.height
+            // check the boards of editTexts
             if(ev.x < left || ev.y < top || ev.x > right || ev.y > bottom){
-                return true
+                return false
             }
         }
-        return false
+        return true
 }
 
     private fun hideSoftKeyBoard(token: IBinder) {
