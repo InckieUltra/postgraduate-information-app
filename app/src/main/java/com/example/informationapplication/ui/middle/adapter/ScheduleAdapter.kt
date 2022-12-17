@@ -41,12 +41,9 @@ class ScheduleAdapter(private val scheduleList: MutableList<Schedule>, private v
 
         viewHolder.itemView.setOnLongClickListener {
             val position = viewHolder.bindingAdapterPosition
-            val menu: PopupMenu = PopupMenu(parent.context, it)
+            val menu = PopupMenu(parent.context, it)
             menu.menuInflater.inflate(R.menu.schedule_menu, menu.menu)
             menu.setForceShowIcon(true)
-//            val method = menu.javaClass.getDeclaredMethod("setOptionalIconsVisible", Boolean.javaClass)
-//            method.isAccessible = true
-//            method.invoke(menu, true)
             menu.setOnMenuItemClickListener {
                 (activity as MiddleFragment).deleteSchedule(scheduleList[position])
                 return@setOnMenuItemClickListener true
