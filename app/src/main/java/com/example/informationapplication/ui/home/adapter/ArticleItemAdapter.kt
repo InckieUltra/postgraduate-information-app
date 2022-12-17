@@ -63,6 +63,9 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
                 NewsContentActivity.actionStart(parent.context,articleItem.articleUrl)
             }
             holder.itemView.setOnLongClickListener{
+                val articleItem = items[holder.absoluteAdapterPosition]
+                val title = articleItem.title
+                val date = articleItem.date
                 val intent = Intent(parent.context,ScheduleActivity::class.java)
                 false
             }
