@@ -1,6 +1,5 @@
-package com.example.informationapplication.ui.middle
+package com.example.informationapplication.ui.middle.adapter
 
-import android.app.Activity
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.informationapplication.R
-import java.lang.Boolean.TYPE
-import java.lang.reflect.Type
+import com.example.informationapplication.ui.middle.MiddleFragment
+import com.example.informationapplication.ui.middle.ScheduleActivity
+import com.example.informationapplication.ui.middle.entity.Schedule
 
 class ScheduleAdapter(private val scheduleList: MutableList<Schedule>, private val activity: Fragment?): RecyclerView.Adapter<ScheduleAdapter.ViewHolder>() {
 
@@ -23,7 +22,7 @@ class ScheduleAdapter(private val scheduleList: MutableList<Schedule>, private v
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.schedule_item, parent, false)
-        val viewHolder:ViewHolder = ViewHolder(view)
+        val viewHolder: ViewHolder = ViewHolder(view)
         viewHolder.itemView.setOnClickListener {
             val position = viewHolder.bindingAdapterPosition
             val schedule = scheduleList[position]

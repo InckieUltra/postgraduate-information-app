@@ -1,6 +1,5 @@
 package com.example.informationapplication.ui.middle
 
-import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +12,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.informationapplication.databinding.FragmentMiddleBinding
-import okhttp3.internal.notifyAll
+import com.example.informationapplication.ui.middle.adapter.ScheduleAdapter
+import com.example.informationapplication.ui.middle.dbhelper.ScheduleDataHelper
+import com.example.informationapplication.ui.middle.entity.Schedule
+import com.example.informationapplication.ui.middle.utils.DatesUtil
 import java.util.*
 
 class MiddleFragment : Fragment() {

@@ -1,8 +1,12 @@
 package com.example.informationapplication.ui.middle
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.IBinder
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioGroup
@@ -12,6 +16,8 @@ import androidx.core.view.children
 import com.example.informationapplication.MainActivity
 import com.example.informationapplication.R
 import com.example.informationapplication.databinding.ActivityScheduleBinding
+import com.example.informationapplication.ui.middle.dbhelper.ScheduleDataHelper
+import com.example.informationapplication.ui.middle.entity.Schedule
 import java.util.*
 
 class ScheduleActivity : AppCompatActivity() {
@@ -144,5 +150,39 @@ class ScheduleActivity : AppCompatActivity() {
         }
         schedule.tag = tagSelector.checkedRadioButtonId.toString()
         return schedule
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if(!Objects.isNull(ev) && ev!!.action == MotionEvent.ACTION_DOWN){
+            val view: View? = currentFocus
+            if(!Objects.isNull(view) && !isTouchingEditText(view!!, ev)){
+                // touch other places
+                hideSoftKeyBoard(view.windowToken)
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    private fun isTouchingEditText(view: View, ev: MotionEvent): Boolean {
+        if(!Objects.isNull(view) && (view is EditText)){
+            var pos = IntArray(2)
+            view.getLocationInWindow(pos)
+            val left = pos[0]
+            val top = pos[1]
+            val right = pos[0] + view.width
+            val bottom = pos[1] + view.height
+            // check the boards of editTexts
+            if(ev.x < left || ev.y < top || ev.x > right || ev.y > bottom){
+                return false
+            }
+        }
+        return true
+}
+
+    private fun hideSoftKeyBoard(token: IBinder) {
+        if(!Objects.isNull(token)) {
+            val im: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS)
+        }
     }
 }
