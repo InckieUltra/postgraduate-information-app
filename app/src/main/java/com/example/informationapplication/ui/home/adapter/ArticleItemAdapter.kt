@@ -1,6 +1,7 @@
 package com.example.informationapplication.ui.home.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.example.informationapplication.R
 import com.example.informationapplication.ui.home.entity.ArticleItem
 import com.example.informationapplication.ui.home.utils.RecyclerOnScrollerListener
 import com.example.informationapplication.ui.home.view.NewsContentActivity
+import com.example.informationapplication.ui.middle.ScheduleActivity
 
 
 class ArticleItemAdapter(private var items: List<ArticleItem>) :
@@ -59,6 +61,13 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
             holder.itemView.setOnClickListener {
                 val articleItem = items[holder.absoluteAdapterPosition]
                 NewsContentActivity.actionStart(parent.context,articleItem.articleUrl)
+            }
+            holder.itemView.setOnLongClickListener{
+                val articleItem = items[holder.absoluteAdapterPosition]
+                val title = articleItem.title
+                val date = articleItem.date
+                val intent = Intent(parent.context,ScheduleActivity::class.java)
+                false
             }
             return holder
         } else {
