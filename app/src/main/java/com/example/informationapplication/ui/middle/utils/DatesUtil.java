@@ -366,7 +366,7 @@ public class DatesUtil {
         return (date.getYear()+1900) + "-" + (date.getMonth()+1) + "-" + (date.getDate());
     }
 
-    public  static Date toDate(String date){
+    public static Date toDate(String date){
         String temp[] = date.split("-");
         Calendar result = Calendar.getInstance();
         result.set(Integer.parseInt(temp[0])-1900, Integer.parseInt(temp[1])-1, Integer.parseInt(temp[2]));

@@ -46,10 +46,13 @@ class ScheduleActivity : AppCompatActivity() {
         val root: View = binding.root
         setContentView(root)
 
+        // fill initSchedule
+        if (!intent.getStringExtra("content").isNullOrBlank()) {
+            initSchedule.content = intent.getStringExtra("content").toString()
+        }
         if (!intent.getBooleanExtra("isNew", true)) {
             initSchedule.id = intent.getIntExtra("id", -1)
             initSchedule.title = intent.getStringExtra("title").toString()
-            initSchedule.content = intent.getStringExtra("content").toString()
             initSchedule.tag = intent.getStringExtra("tag").toString()
         }
 
@@ -95,6 +98,7 @@ class ScheduleActivity : AppCompatActivity() {
         contentText.focusable = View.FOCUSABLE
         contentText.isFocusableInTouchMode = true
         contentText.requestFocus()
+        contentText.setText(initSchedule.content)
 
         if (initSchedule!!.tag == null) tagSelector.check(R.id.box1)
         else tagSelector.check(initSchedule!!.tag.toInt())
@@ -115,12 +119,12 @@ class ScheduleActivity : AppCompatActivity() {
     private fun checkSchedule(schedule: Schedule?){
         editButton.text = "编辑"
 
-        titleText.setText(initSchedule!!.title)
+        titleText.setText(initSchedule.title)
         titleText.focusable = View.NOT_FOCUSABLE
         titleText.isEnabled = false
         titleText.isFocusableInTouchMode = false
 
-        contentText.setText(initSchedule!!.content)
+        contentText.setText(initSchedule.content)
         contentText.focusable = View.NOT_FOCUSABLE
         contentText.isFocusableInTouchMode = false
         //contentText.setText("test")

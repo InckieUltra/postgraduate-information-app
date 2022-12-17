@@ -1,7 +1,9 @@
 package com.example.informationapplication.ui.home.adapter
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.informationapplication.R
@@ -16,6 +19,7 @@ import com.example.informationapplication.ui.home.entity.ArticleItem
 import com.example.informationapplication.ui.home.utils.RecyclerOnScrollerListener
 import com.example.informationapplication.ui.home.view.NewsContentActivity
 import com.example.informationapplication.ui.middle.ScheduleActivity
+import com.example.informationapplication.ui.middle.utils.DatesUtil
 
 
 class ArticleItemAdapter(private var items: List<ArticleItem>) :
@@ -64,10 +68,24 @@ class ArticleItemAdapter(private var items: List<ArticleItem>) :
             }
             holder.itemView.setOnLongClickListener{
                 val articleItem = items[holder.absoluteAdapterPosition]
-                val title = articleItem.title
-                val date = articleItem.date
-                val intent = Intent(parent.context,ScheduleActivity::class.java)
-                false
+                val date = DatesUtil.toDate(articleItem.date)
+                val intent = Intent(parent.context, ScheduleActivity::class.java)
+                intent.putExtra("content", articleItem.title)
+                intent.putExtra("year", date.year+3800)
+                intent.putExtra("month", date.month+1)
+                intent.putExtra("day", (date.day+3) % 7)
+                intent.putExtra("date", date.date)
+                intent.putExtra("isNew", true)
+
+                val menu = PopupMenu(parent.context, it)
+                menu.menuInflater.inflate(R.menu.info_menu, menu.menu)
+                menu.setOnMenuItemClickListener {
+                    parent.context.startActivity(intent)
+                    return@setOnMenuItemClickListener true
+                }
+                menu.show()
+
+                return@setOnLongClickListener true
             }
             return holder
         } else {
