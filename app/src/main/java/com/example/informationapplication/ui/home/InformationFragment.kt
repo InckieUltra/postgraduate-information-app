@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.example.informationapplication.databinding.FragmentLeftBinding
 import com.example.informationapplication.ui.home.adapter.ViewPagerAdapter
+import com.example.informationapplication.ui.home.utils.ArticlePageTransformer
 import com.example.informationapplication.ui.home.view.SubInformationFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -43,7 +44,7 @@ class InformationFragment : Fragment() {
         }
         viewPagerAdapter = ViewPagerAdapter(this, fragmentList, titleList)
         viewPager.adapter = viewPagerAdapter
-
+        viewPager.setPageTransformer(ArticlePageTransformer())
         TabLayoutMediator(
             tabLayout,
             viewPager
