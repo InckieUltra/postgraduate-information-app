@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -59,10 +58,7 @@ class MiddleFragment : Fragment() {
         val cal: Calendar = Calendar.getInstance()
         val calendarView: CalendarView = binding.calendarView
         calendarView.setOnDateChangeListener {
-                _calendarView, year, month, day ->
-                    val toast: Toast = Toast.makeText(_calendarView.context, "您选择了" + year + "年" + (month+1) + "月" + day + "日。", Toast.LENGTH_SHORT)
-//                    toast.show()
-
+                _, year, month, day ->
                     cal.set(year, month, day)
                     val currentChosenDate: Date = cal.time
                     val diff = DatesUtil.getDiffDays(currentChosenDate, today)
