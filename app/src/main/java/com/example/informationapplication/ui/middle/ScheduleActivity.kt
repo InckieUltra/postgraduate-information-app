@@ -175,7 +175,7 @@ class ScheduleActivity : AppCompatActivity() {
             val top = pos[1]
             val right = pos[0] + view.width
             val bottom = pos[1] + view.height
-            // check the boards of editTexts
+            // check the borders of editTexts
             if(ev.x < left || ev.y < top || ev.x > right || ev.y > bottom){
                 return false
             }
