@@ -83,7 +83,7 @@ class ScheduleActivity : AppCompatActivity() {
 
         when{
             intent.getBooleanExtra("isNew", true) -> editSchedule()
-            else -> checkSchedule(initSchedule)
+            else -> checkSchedule()
         }
     }
 
@@ -92,7 +92,6 @@ class ScheduleActivity : AppCompatActivity() {
 
         titleText.focusable = View.FOCUSABLE
         titleText.isFocusableInTouchMode = true
-        titleText.isEnabled = true
         titleText.requestFocus()
 
         contentText.focusable = View.FOCUSABLE
@@ -116,18 +115,16 @@ class ScheduleActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkSchedule(schedule: Schedule?){
+    private fun checkSchedule() {
         editButton.text = "编辑"
 
         titleText.setText(initSchedule.title)
         titleText.focusable = View.NOT_FOCUSABLE
-        titleText.isEnabled = false
         titleText.isFocusableInTouchMode = false
 
         contentText.setText(initSchedule.content)
         contentText.focusable = View.NOT_FOCUSABLE
         contentText.isFocusableInTouchMode = false
-        //contentText.setText("test")
 
         tagSelector.check(initSchedule!!.tag.toInt())
         tagSelector.children.forEach {
@@ -160,7 +157,7 @@ class ScheduleActivity : AppCompatActivity() {
         if(!Objects.isNull(ev) && ev!!.action == MotionEvent.ACTION_DOWN){
             val view: View? = currentFocus
             if(!Objects.isNull(view) && !isTouchingEditText(view!!, ev)){
-                // touch other places
+                // if touch other places
                 hideSoftKeyBoard(view.windowToken)
             }
         }
