@@ -36,10 +36,9 @@ class SubInformationFragment : Fragment() {
         Pair("国家政策",40),
         Pair("院校政策",80),
         Pair("考研动态",50),
-        Pair("复试指导",50),
         Pair("复试指导",60),
-        Pair("复试指导",30),
-        Pair("复试指导",80),
+        Pair("专硕巡展",30),
+        Pair("推免面试",80),
     )
     private var _binding: FragmentSubInformationBinding? = null
     private val binding get() = _binding!!
