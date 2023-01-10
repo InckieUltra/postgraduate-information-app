@@ -5,9 +5,9 @@ import java.sql.*
 
 object DBOpenHelper {
     private const val driver = "com.mysql.jdbc.Driver" //MySQL 驱动
-    private const val url = "jdbc:mysql://124.220.207.224:3306/postgraduateinfosys?useSSL=false" //MYSQL数据库连接Url
-    private const val user = "root" //用户名
-    private const val password = "123456" //密码//获取MYSQL驱动
+    private const val url = "jdbc:mysql://xxx.xxx.xxx.xxx:3306/postgraduateinfosys?useSSL=false" //MYSQL数据库连接Url
+    private const val user = "" //用户名
+    private const val password = "" //密码//获取MYSQL驱动
     //获取连接
     /**
      * 连接数据库
